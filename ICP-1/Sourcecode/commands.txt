@@ -1,0 +1,14 @@
+hdfs dfs -mkdir ICP-1
+hdfs dfs -put /home/cloudera/Downloads/shakespeare.txt ICP-1/
+hdfs dfs -put /home/cloudera/Downloads/word_list.txt ICP-1/
+hdfs dfs -appendToFile /home/cloudera/Downloads/word_list.txt ICP-1/shakespeare.txt
+hadoop fs -cat / ICP-1/shakespeare.txt | head -5
+hadoop fs -cat / ICP-1/shakespeare.txt | tail -5
+hadoop fs -cat / ICP-1/shakespeare.txt | head -5 | hadoop fs -put out.txt
+hadoop fs -cat / ICP-1/shakespeare.txt | head -5 | hadoop fs -put out.txt
+hadoop fs -getmerge  ICP-1/* ICP-1/final
+hadoop fs -put ICP-1/final ICP-1/
+
+
+ 
+
