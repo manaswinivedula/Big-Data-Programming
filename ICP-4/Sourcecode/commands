@@ -1,0 +1,69 @@
+commands of petrol table:
+
+create table petrol (distributer_id STRING,distributer_name STRING,amt_IN STRING,amy_OUT STRING,vol_IN INT,vol_OUT INT,year INT)  row  format delimited fields terminated by ‘,’ stored as textfile;
+
+load data local inpath‘/home/cloudera/Downloads/petrol.txt’  into table petrol;
+
+SELECT distributer_name,SUM(vol_OUT)  FROM  petrol GROUP  BY distributer_name;
+
+SELECT distributer_id,vol_OUT FROM petrol order by vol_OUT desc limit 10;
+
+SELECT distributer_id,vol_OUT FROM petrol order by vol_OUT limit 10;
+
+select distributer_name, year from petrol where (vol_IN-vol_OUT) > 500;`
+
+select distributer_name,year from petrol sort by year limit 10;
+
+select distributer_name,year from petrol cluster by distributer_name sort by year  limit 10;
+
+select distributer_name,year from petrol distribute by distributer_name  limit 10;
+
+commands of olympics table:
+
+create table olympic(athelete STRING,age INT,country STRING,year STRING,closing STRING,sport STRING,gold INT,silver INT,bronze INT,total INT) row format delimited fields terminated by ‘\t’ stored as textfile;
+
+load data local inpath‘/home/cloudera/Downloads/olympic_data.csv’ into table olympic;
+
+select country,SUM(total) from olympic where sport = "Swimming" GROUP BY country;
+
+select year,SUM(total) from olympic where country = "India" GROUP BY year;
+
+select country,SUM(total) from olympic GROUP BY country;
+
+select country,SUM(gold) from olympic GROUP BY country;
+
+select distinct(country), year from olympic where sport="Shooting" order by year, country;
+
+
+commands of movies,user,ratings table:
+
+movies table:
+create table movies_new (movieId STRING, title STRING, genres ARRAY<STRING>) row format delimited fields terminated by ',' collection items terminated by '|' stored as textfile;
+
+load data local inpath '/home/cloudera/Downloads/MovieLens/movies.csv' into table movies;
+
+alter table movies set tblproperties ("skip.header.line.count"="1");
+
+ratings table:
+
+create table ratings_new (userId STRING, movieId INT, rating DECIMAL(2,1), timestamp STRING) row format delimited fields terminated by ',' stored as textfile;
+
+load data local inpath '/home/cloudera/Downloads/MovieLens/ratings.csv' into table ratings;
+
+alter table ratings set tblproperties ("skip.header.line.count"="1");
+
+users table:
+
+create table users (userId INT, gender STRING, occupation INT,zipcode INT) row format delimited fileds terminated by ',' stored as textfile;
+
+load data local inpath '/home/cloudera/Downloads/MovieLens/users.txt' into table users;
+
+alter table users set tblproperties ("skip.header.line.count"="1");
+
+select title,genres from movies_new where array_contains(genres, 'Action') and array_contains(genres,'Drama');
+
+select movieId, rating from ratings_new where rating = 5;
+
+select title, rating, genres from movies_new JOIN ratings_new ON movies_new.movieId = ratings_new.movieId where array_contains(genres, 'Action') order by rating desc limit 11;
+
+
