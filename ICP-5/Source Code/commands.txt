@@ -1,0 +1,31 @@
+Task1:
+sudo service mysqld start
+mysql -u root -pcloudera
+show db;
+create database db2;
+create table employees(name VARCHAR(100), salary FLOAT, id INT);
+insert into employees values('Manaswini',23456, 1),('mike',2345,2),('jhon',3456,3);
+sqoop import --connect jdbc:mysql://localhost/db2 --username root --password cloudera --table employees --m 1
+hadoop fs -ls employees/
+hadoop fs -cat employees/*
+sqoop import --connect jdbc:mysql://localhost/db2 --username root --password cloudera --table employees --m 1 --target-dir result2
+hadoop fs -cat result2/part-m-*
+create table e(name VARCHAR(100), salary FLOAT, id INT);
+sqoop export --connect jdbc:mysql://localhost/db2 --username root --password cloudera--table e --export-dir result2/part-m-00000
+select * from e;
+
+Task2:
+hive -f tables-schemas.hql
+create table emp1(name VARCHAR(100), salary FLOAT, id INT);
+sqoop export --connect jdbc:mysql://localhost/db1 --username root --password cloudera--table emp1 --export-dir /user/hive/warehouse/new -m 1
+select * from emp1;
+
+Task3:
+create table stocks1(dt date, val1 float,val2 float, val3 float, val4 float, val5 bigint, val6 float) row format delimited fields terminated by ',' stored as textfile;
+load data local inpath '/home/cloudera/Downloads/stocks.csv' into table stocks1;
+create table stocks1(dt DATE,val1 FLOAT, val2 FLOAT, val3 FLOAT, val4 FLOAT,val5 BIGINT, val6 FLOAT);
+select * from stocks1 limit 10;
+analyze table stocks1 compute statistics;
+select word,count(1) as count from (select explode(split(dt,'-')) as word from stocks)w group by word order by word;
+select dt,(val4-val1) from stocks1 where val4-val1<2 limit 10;
+select dt,val5 from stocks order by val5 DESC limit 5;
