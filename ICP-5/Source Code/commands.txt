@@ -24,6 +24,7 @@ Task3:
 create table stocks1(dt date, val1 float,val2 float, val3 float, val4 float, val5 bigint, val6 float) row format delimited fields terminated by ',' stored as textfile;
 load data local inpath '/home/cloudera/Downloads/stocks.csv' into table stocks1;
 create table stocks1(dt DATE,val1 FLOAT, val2 FLOAT, val3 FLOAT, val4 FLOAT,val5 BIGINT, val6 FLOAT);
+sqoop export --connect jdbc:mysql://localhost/db2 --username root --password cloudera --table stocks1 --export-dir /user/hive/warehouse/stocks1/stocks.csv -m 1
 select * from stocks1 limit 10;
 analyze table stocks1 compute statistics;
 select word,count(1) as count from (select explode(split(dt,'-')) as word from stocks)w group by word order by word;
