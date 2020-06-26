@@ -1,0 +1,54 @@
+Music Dataset:
+
+solrctl instancedir --generate /tmp/music2
+gedit /tmp/music2/conf/schema.xml
+solrctl instancedir --create music2 /tmp/music2
+ solrctl collection --create music2
+
+
+
+XML fields
+<field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" /> 
+<field name="asin" type="string" indexed="true" stored="true" multiValued="false" />
+<field name="reviewerName" type="string" indexed="true" stored="true" multiValued="false" />
+<field name="helpful" type="string" indexed="true" stored="true" multiValued="false" />
+<field name="reviewText" type="string" indexed="true" stored="true" multiValued="false" />
+<field name="overall" type="string" indexed="true" stored="true" multiValued="false" />
+<field name="summary" type="string" indexed="true" stored="true" multiValued="false" />
+<field name="unixReviewTime" type="string" indexed="true" stored="true" multiValued="false" />
+<field name="ReviewTime" type="string" indexed="true" stored="true" multiValued="false" />
+
+
+Queries:
+
+reviewerName:"Corbin"
+summary:*cables
+overall : [3 TO 4]
+reviewerName:Matt~0.5
+summary:"Cable Excellent"~5
+
+Books DataSet:
+solrctl instancedir --generate /tmp/booknew
+ gedit /tmp/booknew/conf/schema.xml
+ solrctl instancedir --create booknew /tmp/booknew
+solrctl collection --create booknew
+
+
+
+XML field
+<field name="series_t" type="text_general" indexed="true" stored="true"/>
+
+<field name="sequence_i" type="text_general" indexed="true" stored="true"/>
+
+<field name="genre_s" type="text_general" indexed="true" stored="true"/>
+
+
+
+Queries
+
+
+genre_s:fantasy
+price:[6 TO *] AND inStock: false
+series_t:"song fire"~10
+price:[5 TO 7] AND author: *scott
+inStock:true AND sequence_i:1
