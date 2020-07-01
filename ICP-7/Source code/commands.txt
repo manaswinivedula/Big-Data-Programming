@@ -1,0 +1,63 @@
+//intializing cassandra server
+ C:\Program Files\apache-cassandra-3.11.6-bin\apache-cassandra-3.11.6\bin
+
+cassandra.bat -f
+//entering into the cassandra shell
+cd C:\Program Files\apache-cassandra-3.11.6-bin\apache-cassandra-3.11.6\bin
+
+cqlsh
+
+//creating a key space
+create keyspace new with replication={'class':'SimpleStrategy', 'replication_factor':1};
+desc keyspaces;
+
+//employee table
+create table employee (employee_id int PRIMARY KEY, department text, lastname text, years_with_company int, hiredate text, jobtitle text, salary int, managerid int);
+
+ copy employee (employee_id, department, lastname, years_with_company, hiredate, jobtitle, salary, managerid) from 'C:\Users\manas\Documents\employee_entries.csv' WITH DELIMITER='|' AND HEADER = TRUE;
+ select * from employee;
+select employee_id, lastname, department, hiredate from employee;
+
+
+ select lastname, salary from employee where jobtitle ='clerks' allow filtering;
+
+ select lastname, jobtitle,salary from employee where hiredate='2000-02-18' allow filtering;
+
+ select lastname, salary from employee;
+select lastname,salary, managerid from employee where salary =45000 allow filtering;
+
+
+CREATE FUNCTION IF NOT EXISTS displayname (column TEXT) 
+RETURNS NULL ON NULL INPUT 
+RETURNS text 
+LANGUAGE javascript AS 
+$$ column.charAt(0).toUpperCase() + column.slice(1) $$;
+
+select displayname(lastname) from employee;
+
+
+
+CREATE FUNCTION IF NOT EXISTS len (input text) 
+   CALLED ON NULL INPUT 
+   RETURNS int 
+   LANGUAGE java AS '
+   return input.length();';
+
+ CREATE CUSTOM INDEX firstname_idx ON employee (lastname) USING 'org.apache.cassandra.index.sasi.SASIIndex' WITH OPTIONS = {'mode': 'PREFIX', 'analyzer_class': 'org.apache.cassandra.index.sasi.analyzer.StandardAnalyzer', 'case_sensitive': 'false'};
+
+ select lastname, len(lastname) as length from employee where lastname like 'G%';
+
+ select displayname(lastname), len(lastname) as length from employee where lastname like 'j%';
+
+select displayname(lastname), len(lastname) as length from employee where lastname like 's%';
+
+//courses table:
+ create table course (name text, location text, instructor text PRIMARY KEY);
+
+ copy course (name, location, instructor) from 'C:\Users\manas\Downloads\courses_entries.csv' WITH DELIMITER=',' AND HEADER = TRUE;
+
+select * from course;
+
+select name,instructor from course where name ='Biology' allow filtering;
+
+
