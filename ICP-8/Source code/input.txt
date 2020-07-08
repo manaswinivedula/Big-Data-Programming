@@ -1,0 +1,4 @@
+bears eat grass
+cows also eat grass
+pandas eat bamboo
+bears cows donot eat bamboo
