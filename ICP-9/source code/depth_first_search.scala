@@ -3,7 +3,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 object depth_first_search {
 
   def main(args: Array[String]) {
-    val conf = new SparkConf().setAppName("Breadthfirst").setMaster("local[*]")
+    val conf = new SparkConf().setAppName("Depthfirstsearch").setMaster("local[*]")
     val sc = new SparkContext(conf)
     sc.setLogLevel("ERROR")
 
