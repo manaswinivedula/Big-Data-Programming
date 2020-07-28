@@ -1,0 +1,60 @@
+from pyspark.ml.classification import NaiveBayes
+from pyspark.ml.evaluation import MulticlassClassificationEvaluator
+from pyspark.ml.feature import VectorAssembler
+from pyspark.mllib.evaluation import MulticlassMetrics
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+import numpy as np
+import os
+
+os.environ["SPARK_HOME"] = "C:\\spark-2.4.4-bin-hadoop2.7"
+os.environ["HADOOP_HOME"]="C:\\winutils"
+
+# Creating spark session
+spark = SparkSession.builder.appName("DecisionTree App").getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
+
+# Loading the data
+data = spark.read.format("csv").option("header", True) \
+                               .option("inferSchema", True) \
+                               .option("delimiter", ",") \
+                               .load("adult.data")
+
+
+data.printSchema()
+
+data = data.withColumn("X", F.when(F.col("X") == ' <=50K', 0).when(F.col("X") == ' >50K', 1))
+
+data = data.withColumnRenamed("X", "label")
+data = data.select(data.label.cast("double"),"age", "education-num", "hours-per-week")
+data.show()
+
+assembler = VectorAssembler(inputCols=data.columns[1:], outputCol="features")
+data = assembler.transform(data)
+data.show()
+
+# Splitting the data into training and data set
+training, test = data.select("label","features").randomSplit([0.70, 0.30])
+
+# Create Navie Bayes model and fit the model with training dataset
+nb = NaiveBayes()
+model = nb.fit(training)
+
+# Generate prediction from test dataset
+pred = model.transform(test)
+
+# Evaluate the accuracy of the model
+evaluator = MulticlassClassificationEvaluator()
+accuracy = evaluator.evaluate(pred)
+
+# Show model accuracy
+print("Accuracy:", accuracy,"\n\n")
+
+
+#Report
+predAndLabels = pred.select("prediction", "label").rdd
+metrics = MulticlassMetrics(predAndLabels)
+print("Confusion Matrix", metrics.confusionMatrix())
+print("Precision", metrics.precision())
+print("Recall", metrics.recall())
+print("F-measure", metrics.fMeasure())
